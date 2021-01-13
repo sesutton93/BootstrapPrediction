@@ -84,20 +84,20 @@ class BootstrapRegressor():
         ''' returns list of individual predictions and list of target values'''
 
         tar_list, pred_list = [], []
-        for tar_id, preds in self._pred_dict.items():
+        for tar_id, preds in list(self._pred_dict.items()):
             tar_list += [self._train_targets[tar_id]] * len(preds)
             pred_list += preds
-        return pred_list, tar_list
+        return np.array(pred_list), np.array(tar_list)
 
     @property
     def oob_prediction(self):
         return np.array([self.aggregate(self._pred_dict[i])
-                         for i in self._train_targets])
+                         for i in self._train_targets.keys()])
 
     @property
     def oob_score_(self):
         mask = np.isnan(self.oob_prediction)
-        targets = np.array(self._train_targets.values())
+        targets = np.array(list(self._train_targets.values()))
         prediction = self.oob_prediction
         if np.sum(mask) > 0:
             logging.warning('Not all values bootstrap predicted')
